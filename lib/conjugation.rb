@@ -1,14 +1,8 @@
 # encoding: utf-8
-class Conjugation
-  DEFAULT_INFINITIVE = 'गर्नु'
-  INFINITIVES = ['गर्नु', 'खानु', 'जानु', 'पकाउनु']
-  PAST_ROOTS = {
-      'जानु' => 'ग'
-    }
+require_relative 'nepali_verb'
 
+class Conjugation
   PAST_ROOT_TENSES = ['simple past', 'completed past']
-  TENSES = ['present', 'simple past', 'completed past', 'simple future']
-  SUBJECTS = ['म', 'तिमी']
   STEMS = {
       'present' => {
         'म' => ['छु', 'दिन'],
@@ -28,11 +22,10 @@ class Conjugation
       }
     }
 
-  attr_reader :infinitive
   attr_accessor :tense, :subject, :negative
 
-  def initialize(infinitive = '')
-    @infinitive = infinitive.to_s.empty? ? DEFAULT_INFINITIVE : infinitive
+  def initialize(nepali_verb)
+    @nepali_verb = nepali_verb
     @subject = 'म'
     @tense = 'present'
     @negative = false
@@ -50,24 +43,8 @@ class Conjugation
     STEMS[tense][subject][negative ? 1 : 0]
   end
 
-  def root
-    # Remove 'नु'
-    infinitive[0..-3]
-  end
-
-  def past_root
-    new_root = PAST_ROOTS[infinitive] || root
-    # double-vowel verbs, e.g. 'पकाउनु'
-    if new_root[-2, 2] == 'ाउ'
-      # remove the second vowel
-      new_root[0..-2]
-    else
-      new_root
-    end
-  end
-
   def tensed_root
-    PAST_ROOT_TENSES.include?(tense) ? past_root : root
+    PAST_ROOT_TENSES.include?(tense) ? @nepali_verb.past_root : @nepali_verb.root
   end
 
   ### CLASS METHODS ###

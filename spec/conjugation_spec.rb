@@ -3,55 +3,33 @@ require_relative '../lib/conjugation'
 
 describe Conjugation do
 
-  let(:regular_verb) { Conjugation.new('गर्नु') }
-
-  describe '#infinitive' do
-    it 'should be the same as a valid constructor argument' do
-      regular_verb.infinitive.should == 'गर्नु'
-    end
-
-    it 'should end in "नु"' do
-      regular_verb.infinitive[-2, 2] == 'नु'
-    end
-
-    it 'should be DEFAULT_INFINITIVE when constructed with no parameters' do
-      Conjugation.new().infinitive.should == 'गर्नु'
-    end
-
-   it 'should be DEFAULT_INFINITIVE when constructed with nil' do
-      Conjugation.new(nil).infinitive.should == 'गर्नु'
-    end
-
-    it 'should be DEFAULT_INFINITIVE when constructed with empty string' do
-      Conjugation.new('').infinitive.should == 'गर्नु'
-    end
-  end
+  let(:regular_conj) { Conjugation.new(NepaliVerb.new('गर्नु')) }
 
   describe '#tense' do
     it 'should default to "present"' do
-      regular_verb.tense.should == 'present'
+      regular_conj.tense.should == 'present'
     end
 
     it 'should be changeable to "simple past"' do
-      regular_verb.tense = 'simple past'
-      regular_verb.tense.should == 'simple past'
+      regular_conj.tense = 'simple past'
+      regular_conj.tense.should == 'simple past'
     end
   end
 
   describe '#subject' do
     it 'should default to "म"' do
-      regular_verb.subject.should == 'म'
+      regular_conj.subject.should == 'म'
     end
 
     it 'should be changeable to "तिमी"' do
-      regular_verb.subject = 'तिमी'
-      regular_verb.subject.should == 'तिमी'
+      regular_conj.subject = 'तिमी'
+      regular_conj.subject.should == 'तिमी'
     end
   end
 
   describe '#negative' do
     it 'should default to false' do
-      regular_verb.negative.should be_false
+      regular_conj.negative.should be_false
     end
   end
 
@@ -72,65 +50,54 @@ describe Conjugation do
   ####### REGULAR VERB ######
 
   context 'With a regular verb like "गर्नु"' do
-    describe '#root' do
-      it 'should be the infinitive minus "नु"' do
-        regular_verb.root.should == 'गर्'
-      end
-    end
-
-    describe '#past_root' do
-      it 'should be the the same as root' do
-        regular_verb.past_root.should == regular_verb.root
-      end
-    end
 
     describe 'conjugation' do
-      subject { regular_verb.to_s }
+      subject { regular_conj.to_s }
 
       context 'in present tense' do
         # present tense is the default
 
         context 'with "म"' do
-          before { regular_verb.subject = 'म' }
+          before { regular_conj.subject = 'म' }
           it { should == 'गर्छु' }
 
           context 'negative' do
-            before { regular_verb.negative = true }
+            before { regular_conj.negative = true }
             it { should == 'गर्दिन' }
           end
 
         end
 
         context 'with "तिमी"' do
-          before { regular_verb.subject = 'तिमी' }
+          before { regular_conj.subject = 'तिमी' }
           it { should == 'गर्छौ' }
 
           context 'negative' do
-            before { regular_verb.negative = true }
+            before { regular_conj.negative = true }
             it { should == 'गर्दैनौ' }
           end
         end
       end # present tense
 
       context 'in simple past tense' do
-        before { regular_verb.tense = 'simple past' }
+        before { regular_conj.tense = 'simple past' }
 
         context 'with "म"' do
-          before { regular_verb.subject = 'म' }
+          before { regular_conj.subject = 'म' }
           it { should == 'गरेँ' }
 
           context 'negative' do
-            before { regular_verb.negative = true }
+            before { regular_conj.negative = true }
             it { should == 'गरिनँ' }
           end
         end
 
         context 'with "तिमी"' do
-          before { regular_verb.subject = 'तिमी' }
+          before { regular_conj.subject = 'तिमी' }
           it { should == 'गर्यौ' }
 
           context 'negative' do
-            before { regular_verb.negative = true }
+            before { regular_conj.negative = true }
             it { should == 'गरेनौ' }
           end
         end
@@ -139,46 +106,34 @@ describe Conjugation do
   end
 
   context 'With irregular verb जानु' do
-    let(:janu_verb) { Conjugation.new('जानु') }
-
-    describe '#root' do
-      it 'should be regular' do
-        janu_verb.root.should == 'जा'
-      end
-    end
-
-    describe '#past_root' do
-      it 'should be irregular' do
-        janu_verb.past_root.should == 'ग'
-      end
-    end
+    let(:janu_conj) { Conjugation.new(NepaliVerb.JANU) }
 
     describe 'conjugation' do
-      subject { janu_verb.to_s }
+      subject { janu_conj.to_s }
 
       context 'in simple past tense' do
-        before { janu_verb.tense = 'simple past' }
+        before { janu_conj.tense = 'simple past' }
 
         { 'म' => 'गएँ',
           'तिमी' => 'गयौ' }
           .each do |subject, verb|
           it "#{subject} -> #{verb}" do
-            janu_verb.subject = subject
+            janu_conj.subject = subject
             should == verb
           end
         end
       end
 
       context 'in completed past tense' do
-        before { janu_verb.tense = 'completed past' }
+        before { janu_conj.tense = 'completed past' }
 
         context 'with "म"' do
-          before { janu_verb.subject = 'म' }
+          before { janu_conj.subject = 'म' }
           it { should == 'गएको छु' }
         end
 
         context 'with "तिमी"' do
-          before { janu_verb.subject = 'तिमी' }
+          before { janu_conj.subject = 'तिमी' }
           it { should == 'गएका छौ' }
         end
       end
@@ -186,7 +141,7 @@ describe Conjugation do
   end # "जानु"
 
   context 'With a single-vowel verb like "खानु"' do
-    let(:single_vowel_verb) { Conjugation.new('खानु') }
+    let(:single_vowel_verb) { Conjugation.new(NepaliVerb.new('खानु')) }
 
     context 'in present tense' do
       it 'should conjugate for "म" by adding a half न' do
@@ -206,19 +161,7 @@ describe Conjugation do
 
 
   context 'With a double-vowel verb like "पकाउनु"' do
-    let(:double_vowel_verb) { Conjugation.new('पकाउनु') }
-
-    describe '#root' do
-      it 'should be regular' do
-        double_vowel_verb.root.should == 'पकाउ'
-      end
-    end
-
-    describe '#past_root' do
-      it 'should drop the second vowel' do
-        double_vowel_verb.past_root.should == 'पका'
-      end
-    end
+    let(:double_vowel_verb) { Conjugation.new(NepaliVerb.new('पकाउनु')) }
 
     context 'in completed past tense' do
       before do
