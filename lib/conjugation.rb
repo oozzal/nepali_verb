@@ -3,7 +3,7 @@ require_relative 'nepali_verb'
 
 class Conjugation
   PAST_ROOT_TENSES = ['simple past', 'completed past']
-  STEMS = {
+  SUFFIXES = {
       'present' => {
         'म' => ['छु', 'दिन'],
         'तिमी' => ['छौ', 'दैनौ']
@@ -32,15 +32,15 @@ class Conjugation
   end
 
   def to_s
-    self.class.join_root_and_stem(safe_root, stem)
+    self.class.join_root_and_suffix(safe_root, suffix)
   end
 
   def safe_root
-    self.class.nasalized_root_for_stem(tensed_root, stem)
+    self.class.nasalized_root_for_suffix(tensed_root, suffix)
   end
 
-  def stem
-    STEMS[tense][subject][negative ? 1 : 0]
+  def suffix
+    SUFFIXES[tense][subject][negative ? 1 : 0]
   end
 
   def tensed_root
@@ -68,12 +68,12 @@ class Conjugation
     diacritic + text[1..-1]
   end
 
-  def self.nasalized_root_for_stem(root, stem)
-    stem_first = stem[0, 1]
+  def self.nasalized_root_for_suffix(root, suffix)
+    suffix_first = suffix[0, 1]
     root_last  = root[-1, 1]
     root_last2 = root[-2, 2]
 
-    if stem_first == 'छ'
+    if suffix_first == 'छ'
       if root_last == 'ा'
         # Add half 'न' between 'ा' and 'छ', e.g. 'खान्छु'
         return root + 'न्'
@@ -81,7 +81,7 @@ class Conjugation
         # Add nasalization over the last vowel, e.g. 'पकाउँछु'
         return root + 'ँ'
       end
-    elsif stem_first == 'द'
+    elsif suffix_first == 'द'
       if ['ा', 'उ'].include? root_last
         return root + 'ँ'
       end
@@ -89,12 +89,12 @@ class Conjugation
     root
   end
 
-  def self.join_root_and_stem(root, stem)
-    if ends_with_halant(root) && starts_with_full_vowel(stem)
+  def self.join_root_and_suffix(root, suffix)
+    if ends_with_halant(root) && starts_with_full_vowel(suffix)
         # remove halant
-        root[0..-2] + convert_initial_full_vowel_to_diacritic(stem)
+        root[0..-2] + convert_initial_full_vowel_to_diacritic(suffix)
     else
-      root + stem
+      root + suffix
     end
   end
 
